@@ -127,16 +127,8 @@ class Snake extends GameObject{
 
 
     void move() {
-        // Move the body
-        // Start at the back and move it
-        // to the position of the segment in front of it
-        for (int i = segmentLocations.size() - 1; i > 0; i--) {
-
-            // Make it the same value as the next segment
-            // going forwards towards the head
-            segmentLocations.get(i).x = segmentLocations.get(i - 1).x;
-            segmentLocations.get(i).y = segmentLocations.get(i - 1).y;
-        }
+        //Refactored
+        movingLoop();
 
         // Move the head in the appropriate heading
         // Get the existing head position
@@ -162,6 +154,21 @@ class Snake extends GameObject{
         }
 
     }
+
+    //Refactored
+    void movingLoop() {
+        // Move the body
+        // Start at the back and move it
+        // to the position of the segment in front of it
+        for (int i = segmentLocations.size() - 1; i > 0; i--) {
+
+            // Make it the same value as the next segment
+            // going forwards towards the head
+            segmentLocations.get(i).x = segmentLocations.get(i - 1).x;
+            segmentLocations.get(i).y = segmentLocations.get(i - 1).y;
+        }
+    }
+
 
     boolean detectDeath() {
         // Has the snake died?
@@ -244,14 +251,20 @@ class Snake extends GameObject{
                     break;
             }
 
-            // Draw the snake body one block at a time
-            for (int i = 1; i < segmentLocations.size(); i++) {
-                canvas.drawBitmap(mBitmapBody,
-                        segmentLocations.get(i).x
-                                * mSegmentSize,
-                        segmentLocations.get(i).y
-                                * mSegmentSize, paint);
-            }
+            //Refactored
+            DrawSnakeBody(canvas, paint);
+        }
+    }
+
+    //Refactored
+    void DrawSnakeBody(Canvas canvas, Paint paint) {
+        // Draw the snake body one block at a time
+        for (int i = 1; i < segmentLocations.size(); i++) {
+            canvas.drawBitmap(mBitmapBody,
+                    segmentLocations.get(i).x
+                            * mSegmentSize,
+                    segmentLocations.get(i).y
+                            * mSegmentSize, paint);
         }
     }
 
