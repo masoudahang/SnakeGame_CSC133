@@ -11,16 +11,10 @@ import android.view.MotionEvent;
 
 import java.util.ArrayList;
 
-class Snake {
+class Snake extends GameObject{
 
     // The location in the grid of all the segments
     private ArrayList<Point> segmentLocations;
-
-    // How big is each segment of the snake?
-    private int mSegmentSize;
-
-    // How big is the entire grid
-    private Point mMoveRange;
 
     // Where is the centre of the screen
     // horizontally in pixels?
@@ -46,13 +40,10 @@ class Snake {
 
     Snake(Context context, Point mr, int ss) {
 
+        super(context, mr, ss);
+
         // Initialize our ArrayList
         segmentLocations = new ArrayList<>();
-
-        // Initialize the segment size and movement
-        // range from the passed in parameters
-        mSegmentSize = ss;
-        mMoveRange = mr;
 
         // Create and scale the bitmaps
         mBitmapHeadRight = BitmapFactory
@@ -205,7 +196,7 @@ class Snake {
         return false;
     }
 
-    void draw(Canvas canvas, Paint paint) {
+    public void draw(Canvas canvas, Paint paint) {
 
         // Don't run this code if ArrayList has nothing in it
         if (!segmentLocations.isEmpty()) {
@@ -296,4 +287,5 @@ class Snake {
             }
         }
     }
+    public void spawn() {}
 }
