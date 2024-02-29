@@ -54,11 +54,24 @@ class SnakeGame extends SurfaceView implements Runnable {
     public SnakeGame(Context context, Point size) {
         super(context);
 
-        // Work out how many pixels each block is
-        int blockSize = size.x / NUM_BLOCKS_WIDE;
-        // How many blocks of the same size will fit into the height
-        mNumBlocksHigh = size.y / blockSize;
+        //Refactored
+        soundPool();
 
+        //Refactored
+        TryCatch(context);
+
+
+        // Initialize the drawing objects
+        mSurfaceHolder = getHolder();
+        mPaint = new Paint();
+
+        //Refactored
+        callConstructors(context, size);
+
+    }
+
+    //Refactored
+    void soundPool() {
         // Initialize the SoundPool
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
@@ -73,6 +86,10 @@ class SnakeGame extends SurfaceView implements Runnable {
         } else {
             mSP = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         }
+    }
+
+    //Refactored
+    void TryCatch(Context context) {
         try {
             AssetManager assetManager = context.getAssets();
             AssetFileDescriptor descriptor;
@@ -87,10 +104,14 @@ class SnakeGame extends SurfaceView implements Runnable {
         } catch (IOException e) {
             // Error
         }
+    }
 
-        // Initialize the drawing objects
-        mSurfaceHolder = getHolder();
-        mPaint = new Paint();
+    //Refactored
+    void callConstructors(Context context, Point size) {
+        // Work out how many pixels each block is
+        int blockSize = size.x / NUM_BLOCKS_WIDE;
+        // How many blocks of the same size will fit into the height
+        mNumBlocksHigh = size.y / blockSize;
 
         // Call the constructors of our two game objects
         mApple = new Apple(context,

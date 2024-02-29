@@ -288,7 +288,6 @@ class Snake extends GameObject{
                 case LEFT:
                     heading = Heading.UP;
                     break;
-
             }
         } else {
             // Rotate left
