@@ -221,39 +221,52 @@ class SnakeGame extends SurfaceView implements Runnable {
         if (mSurfaceHolder.getSurface().isValid()) {
             mCanvas = mSurfaceHolder.lockCanvas();
 
-            // Fill the screen with a color
-            mCanvas.drawColor(Color.argb(255, 26, 128, 182));
-
-            // Set the size and color of the mPaint for the text
-            mPaint.setColor(Color.argb(255, 255, 255, 255));
-            mPaint.setTextSize(120);
-
-            // Draw the score
-            mCanvas.drawText("" + mScore, 20, 120, mPaint);
-
-            // Draw the apple and the snake
-            mApple.draw(mCanvas, mPaint);
-            mSnake.draw(mCanvas, mPaint);
+            //Refactored
+            drawColorSize();
 
             // Draw some text while paused
             if(mPaused){
 
-                // Set the size and color of the mPaint for the text
-                mPaint.setColor(Color.argb(255, 255, 255, 255));
-                mPaint.setTextSize(250);
-
-                // Draw the message
-                // We will give this an international upgrade soon
-                //mCanvas.drawText("Tap To Play!", 200, 700, mPaint);
-                mCanvas.drawText(getResources().
-                                getString(R.string.tap_to_play),
-                        200, 700, mPaint);
+                //Refactored
+                drawPaused();
             }
 
 
             // Unlock the mCanvas and reveal the graphics for this frame
             mSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
+    }
+
+    //Refactored
+    void drawColorSize() {
+        // Fill the screen with a color
+        mCanvas.drawColor(Color.argb(255, 26, 128, 182));
+
+        // Set the size and color of the mPaint for the text
+        mPaint.setColor(Color.argb(255, 255, 255, 255));
+        mPaint.setTextSize(120);
+
+        // Draw the score
+        mCanvas.drawText("" + mScore, 20, 120, mPaint);
+
+        // Draw the apple and the snake
+        mApple.draw(mCanvas, mPaint);
+        mSnake.draw(mCanvas, mPaint);
+    }
+
+    //Refactored
+    void drawPaused() {
+        // Set the size and color of the mPaint for the text
+        mPaint.setColor(Color.argb(255, 255, 255, 255));
+        mPaint.setTextSize(250);
+
+        // Draw the message
+        // We will give this an international upgrade soon
+        //mCanvas.drawText("Tap To Play!", 200, 700, mPaint);
+        mCanvas.drawText(getResources().
+                        getString(R.string.tap_to_play),
+                200, 700, mPaint);
+
     }
 
     @Override
