@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 
+import java.util.ArrayList;
+
 
 public abstract class GameObject {
 
@@ -14,6 +16,8 @@ public abstract class GameObject {
     protected Point mSpawnRange;
     protected Point mMoveRange;
 
+    protected ArrayList<Point> segmentLocations;
+
     //Constructor
     public GameObject(Context context, Point location, int size) {
         this.size = size;
@@ -21,6 +25,7 @@ public abstract class GameObject {
         mSegmentSize = size;
         mSpawnRange = location;
         mMoveRange = location;
+        segmentLocations = new ArrayList<>();
 
     }
 

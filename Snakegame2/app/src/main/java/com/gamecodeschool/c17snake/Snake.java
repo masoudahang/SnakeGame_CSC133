@@ -13,9 +13,6 @@ import java.util.ArrayList;
 
 class Snake extends GameObject{
 
-    // The location in the grid of all the segments
-    private ArrayList<Point> segmentLocations;
-
     // Where is the centre of the screen
     // horizontally in pixels?
     private int halfWayPoint;
@@ -42,9 +39,28 @@ class Snake extends GameObject{
 
         super(context, mr, ss);
 
-        // Initialize our ArrayList
-        segmentLocations = new ArrayList<>();
+        //Refactored
+        headMovement(context, ss);
 
+        //Refactored
+        headRotation(context, ss);
+
+        // Create and scale the body
+        mBitmapBody = BitmapFactory
+                .decodeResource(context.getResources(),
+                        R.drawable.body);
+
+        mBitmapBody = Bitmap
+                .createScaledBitmap(mBitmapBody,
+                        ss, ss, false);
+
+        // The halfway point across the screen in pixels
+        // Used to detect which side of screen was pressed
+        halfWayPoint = mr.x * ss / 2;
+    }
+
+    //Refactored
+    void headMovement(Context context, int ss) {
         // Create and scale the bitmaps
         mBitmapHeadRight = BitmapFactory
                 .decodeResource(context.getResources(),
@@ -63,6 +79,10 @@ class Snake extends GameObject{
                 .decodeResource(context.getResources(),
                         R.drawable.head);
 
+    }
+
+    //Refactored
+    void headRotation(Context context, int ss) {
         // Modify the bitmaps to face the snake head
         // in the correct direction
         mBitmapHeadRight = Bitmap
@@ -90,18 +110,6 @@ class Snake extends GameObject{
                 .createBitmap(mBitmapHeadRight,
                         0, 0, ss, ss, matrix, true);
 
-        // Create and scale the body
-        mBitmapBody = BitmapFactory
-                .decodeResource(context.getResources(),
-                        R.drawable.body);
-
-        mBitmapBody = Bitmap
-                .createScaledBitmap(mBitmapBody,
-                        ss, ss, false);
-
-        // The halfway point across the screen in pixels
-        // Used to detect which side of screen was pressed
-        halfWayPoint = mr.x * ss / 2;
     }
 
     // Get the snake ready for a new game
