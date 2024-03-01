@@ -9,9 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.view.MotionEvent;
 
-import java.util.ArrayList;
-
-class Snake extends GameObject{
+class Snake extends GameObject implements Movable, Drawable, Collidable {
 
     // Where is the centre of the screen
     // horizontally in pixels?
@@ -34,8 +32,7 @@ class Snake extends GameObject{
     // A bitmap for the body
     private Bitmap mBitmapBody;
 
-
-    Snake(Context context, Point mr, int ss) {
+    public Snake(Context context, Point mr, int ss) {
 
         super(context, mr, ss);
 
@@ -126,7 +123,7 @@ class Snake extends GameObject{
     }
 
 
-    void move() {
+    public void move() {
         //Refactored
         movingLoop();
 
@@ -170,7 +167,7 @@ class Snake extends GameObject{
     }
 
 
-    boolean detectDeath() {
+    public boolean detectDeath() {
         // Has the snake died?
         boolean dead = false;
 

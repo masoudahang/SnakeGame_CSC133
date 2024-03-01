@@ -16,7 +16,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.io.IOException;
 
-class SnakeGame extends SurfaceView implements Runnable {
+class SnakeGame extends SurfaceView implements Runnable, Game {
 
     // Objects for the game loop/thread
     private Thread mThread = null;
@@ -238,7 +238,7 @@ class SnakeGame extends SurfaceView implements Runnable {
     }
 
     //Refactored
-    void drawColorSize() {
+    public void drawColorSize() {
         // Fill the screen with a color
         mCanvas.drawColor(Color.argb(255, 26, 128, 182));
 
@@ -255,7 +255,7 @@ class SnakeGame extends SurfaceView implements Runnable {
     }
 
     //Refactored
-    void drawPaused() {
+    public void drawPaused() {
         // Set the size and color of the mPaint for the text
         mPaint.setColor(Color.argb(255, 255, 255, 255));
         mPaint.setTextSize(250);
