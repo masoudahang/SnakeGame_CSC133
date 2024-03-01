@@ -15,6 +15,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.io.IOException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 class SnakeGame extends SurfaceView implements Runnable, Game {
 
@@ -48,11 +50,19 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
     // And an apple
     private Apple mApple;
 
+    private Bitmap mBackgroundBitmap;
+
 
     // This is the constructor method that gets called
     // from SnakeActivity
     public SnakeGame(Context context, Point size) {
         super(context);
+
+        //Load the background image
+        mBackgroundBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
+
+        //scale the image to match the screen size
+        mBackgroundBitmap = Bitmap.createScaledBitmap(mBackgroundBitmap, size.x, size.y, true);
 
         //Refactored
         soundPool();
@@ -221,6 +231,9 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
         if (mSurfaceHolder.getSurface().isValid()) {
             mCanvas = mSurfaceHolder.lockCanvas();
 
+            //Draw the background image
+            mCanvas.drawBitmap(mBackgroundBitmap, 0, 0, null);
+
             //Refactored
             drawColorSize();
 
@@ -240,8 +253,6 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
 
     //Refactored
     public void drawColorSize() {
-        // Fill the screen with a color
-        mCanvas.drawColor(Color.argb(255, 26, 128, 182));
 
         // Set the size and color of the mPaint for the text
         mPaint.setColor(Color.argb(255, 255, 255, 255));
@@ -258,15 +269,13 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
     //Refactored
     public void drawPaused() {
         // Set the size and color of the mPaint for the text
-        mPaint.setColor(Color.argb(255, 255, 255, 255));
+        mPaint.setColor(Color.argb(255, 203, 67, 53));
         mPaint.setTextSize(250);
 
         // Draw the message
-        // We will give this an international upgrade soon
-        //mCanvas.drawText("Tap To Play!", 200, 700, mPaint);
         mCanvas.drawText(getResources().
                         getString(R.string.tap_to_play),
-                200, 700, mPaint);
+                450, 600, mPaint);
 
         drawNames();
 
