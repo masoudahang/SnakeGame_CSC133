@@ -224,6 +224,7 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
             //Refactored
             drawColorSize();
 
+            drawNames();
             // Draw some text while paused
             if(mPaused){
 
@@ -231,9 +232,9 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
                 drawPaused();
             }
 
-
             // Unlock the mCanvas and reveal the graphics for this frame
             mSurfaceHolder.unlockCanvasAndPost(mCanvas);
+
         }
     }
 
@@ -266,6 +267,22 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
         mCanvas.drawText(getResources().
                         getString(R.string.tap_to_play),
                 200, 700, mPaint);
+
+        drawNames();
+
+    }
+
+    //Draws names of the students who worked to make the code better
+    public void drawNames() {
+        mPaint.setColor(Color.argb(255, 255, 255, 255));
+        mPaint.setTextSize(30);
+
+        mCanvas.drawText(getResources().
+                        getString(R.string.name1),
+                1950, 50, mPaint);
+        mCanvas.drawText(getResources().
+                        getString(R.string.name2),
+                1950, 85, mPaint);
 
     }
 
