@@ -9,18 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.view.MotionEvent;
 
-import java.util.ArrayList;
-
-class Snake {
-
-    // The location in the grid of all the segments
-    private ArrayList<Point> segmentLocations;
-
-    // How big is each segment of the snake?
-    private int mSegmentSize;
-
-    // How big is the entire grid
-    private Point mMoveRange;
+class Snake extends GameObject implements Movable, Drawable, Collidable {
 
     // Where is the centre of the screen
     // horizontally in pixels?
@@ -43,17 +32,32 @@ class Snake {
     // A bitmap for the body
     private Bitmap mBitmapBody;
 
+    public Snake(Context context, Point mr, int ss) {
 
-    Snake(Context context, Point mr, int ss) {
+        super(context, mr, ss);
 
-        // Initialize our ArrayList
-        segmentLocations = new ArrayList<>();
+        //Refactored
+        headMovement(context, ss);
 
-        // Initialize the segment size and movement
-        // range from the passed in parameters
-        mSegmentSize = ss;
-        mMoveRange = mr;
+        //Refactored
+        headRotation(context, ss);
 
+        // Create and scale the body
+        mBitmapBody = BitmapFactory
+                .decodeResource(context.getResources(),
+                        R.drawable.body);
+
+        mBitmapBody = Bitmap
+                .createScaledBitmap(mBitmapBody,
+                        ss, ss, false);
+
+        // The halfway point across the screen in pixels
+        // Used to detect which side of screen was pressed
+        halfWayPoint = mr.x * ss / 2;
+    }
+
+    //Refactored
+    void headMovement(Context context, int ss) {
         // Create and scale the bitmaps
         mBitmapHeadRight = BitmapFactory
                 .decodeResource(context.getResources(),
@@ -72,6 +76,10 @@ class Snake {
                 .decodeResource(context.getResources(),
                         R.drawable.head);
 
+    }
+
+    //Refactored
+    void headRotation(Context context, int ss) {
         // Modify the bitmaps to face the snake head
         // in the correct direction
         mBitmapHeadRight = Bitmap
@@ -99,18 +107,6 @@ class Snake {
                 .createBitmap(mBitmapHeadRight,
                         0, 0, ss, ss, matrix, true);
 
-        // Create and scale the body
-        mBitmapBody = BitmapFactory
-                .decodeResource(context.getResources(),
-                        R.drawable.body);
-
-        mBitmapBody = Bitmap
-                .createScaledBitmap(mBitmapBody,
-                        ss, ss, false);
-
-        // The halfway point across the screen in pixels
-        // Used to detect which side of screen was pressed
-        halfWayPoint = mr.x * ss / 2;
     }
 
     // Get the snake ready for a new game
@@ -127,17 +123,9 @@ class Snake {
     }
 
 
-    void move() {
-        // Move the body
-        // Start at the back and move it
-        // to the position of the segment in front of it
-        for (int i = segmentLocations.size() - 1; i > 0; i--) {
-
-            // Make it the same value as the next segment
-            // going forwards towards the head
-            segmentLocations.get(i).x = segmentLocations.get(i - 1).x;
-            segmentLocations.get(i).y = segmentLocations.get(i - 1).y;
-        }
+    public void move() {
+        //Refactored
+        movingLoop();
 
         // Move the head in the appropriate heading
         // Get the existing head position
@@ -164,7 +152,22 @@ class Snake {
 
     }
 
-    boolean detectDeath() {
+    //Refactored
+    void movingLoop() {
+        // Move the body
+        // Start at the back and move it
+        // to the position of the segment in front of it
+        for (int i = segmentLocations.size() - 1; i > 0; i--) {
+
+            // Make it the same value as the next segment
+            // going forwards towards the head
+            segmentLocations.get(i).x = segmentLocations.get(i - 1).x;
+            segmentLocations.get(i).y = segmentLocations.get(i - 1).y;
+        }
+    }
+
+
+    public boolean detectDeath() {
         // Has the snake died?
         boolean dead = false;
 
@@ -205,7 +208,7 @@ class Snake {
         return false;
     }
 
-    void draw(Canvas canvas, Paint paint) {
+    public void draw(Canvas canvas, Paint paint) {
 
         // Don't run this code if ArrayList has nothing in it
         if (!segmentLocations.isEmpty()) {
@@ -245,14 +248,20 @@ class Snake {
                     break;
             }
 
-            // Draw the snake body one block at a time
-            for (int i = 1; i < segmentLocations.size(); i++) {
-                canvas.drawBitmap(mBitmapBody,
-                        segmentLocations.get(i).x
-                                * mSegmentSize,
-                        segmentLocations.get(i).y
-                                * mSegmentSize, paint);
-            }
+            //Refactored
+            DrawSnakeBody(canvas, paint);
+        }
+    }
+
+    //Refactored
+    void DrawSnakeBody(Canvas canvas, Paint paint) {
+        // Draw the snake body one block at a time
+        for (int i = 1; i < segmentLocations.size(); i++) {
+            canvas.drawBitmap(mBitmapBody,
+                    segmentLocations.get(i).x
+                            * mSegmentSize,
+                    segmentLocations.get(i).y
+                            * mSegmentSize, paint);
         }
     }
 
@@ -276,7 +285,6 @@ class Snake {
                 case LEFT:
                     heading = Heading.UP;
                     break;
-
             }
         } else {
             // Rotate left
@@ -296,4 +304,5 @@ class Snake {
             }
         }
     }
+    public void spawn() {}
 }

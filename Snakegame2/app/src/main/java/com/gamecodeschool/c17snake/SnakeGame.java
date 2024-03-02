@@ -15,8 +15,10 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.io.IOException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
-class SnakeGame extends SurfaceView implements Runnable{
+class SnakeGame extends SurfaceView implements Runnable, Game {
 
     // Objects for the game loop/thread
     private Thread mThread = null;
@@ -48,17 +50,38 @@ class SnakeGame extends SurfaceView implements Runnable{
     // And an apple
     private Apple mApple;
 
+    private Bitmap mBackgroundBitmap;
+
 
     // This is the constructor method that gets called
     // from SnakeActivity
     public SnakeGame(Context context, Point size) {
         super(context);
 
-        // Work out how many pixels each block is
-        int blockSize = size.x / NUM_BLOCKS_WIDE;
-        // How many blocks of the same size will fit into the height
-        mNumBlocksHigh = size.y / blockSize;
+        //Load the background image
+        mBackgroundBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
 
+        //scale the image to match the screen size
+        mBackgroundBitmap = Bitmap.createScaledBitmap(mBackgroundBitmap, size.x, size.y, true);
+
+        //Refactored
+        soundPool();
+
+        //Refactored
+        TryCatch(context);
+
+
+        // Initialize the drawing objects
+        mSurfaceHolder = getHolder();
+        mPaint = new Paint();
+
+        //Refactored
+        callConstructors(context, size);
+
+    }
+
+    //Refactored
+    void soundPool() {
         // Initialize the SoundPool
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
@@ -73,6 +96,10 @@ class SnakeGame extends SurfaceView implements Runnable{
         } else {
             mSP = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
         }
+    }
+
+    //Refactored
+    void TryCatch(Context context) {
         try {
             AssetManager assetManager = context.getAssets();
             AssetFileDescriptor descriptor;
@@ -87,10 +114,14 @@ class SnakeGame extends SurfaceView implements Runnable{
         } catch (IOException e) {
             // Error
         }
+    }
 
-        // Initialize the drawing objects
-        mSurfaceHolder = getHolder();
-        mPaint = new Paint();
+    //Refactored
+    void callConstructors(Context context, Point size) {
+        // Work out how many pixels each block is
+        int blockSize = size.x / NUM_BLOCKS_WIDE;
+        // How many blocks of the same size will fit into the height
+        mNumBlocksHigh = size.y / blockSize;
 
         // Call the constructors of our two game objects
         mApple = new Apple(context,
@@ -200,39 +231,68 @@ class SnakeGame extends SurfaceView implements Runnable{
         if (mSurfaceHolder.getSurface().isValid()) {
             mCanvas = mSurfaceHolder.lockCanvas();
 
-            // Fill the screen with a color
-            mCanvas.drawColor(Color.argb(255, 26, 128, 182));
+            //Draw the background image
+            mCanvas.drawBitmap(mBackgroundBitmap, 0, 0, null);
 
-            // Set the size and color of the mPaint for the text
-            mPaint.setColor(Color.argb(255, 255, 255, 255));
-            mPaint.setTextSize(120);
+            //Refactored
+            drawColorSize();
 
-            // Draw the score
-            mCanvas.drawText("" + mScore, 20, 120, mPaint);
-
-            // Draw the apple and the snake
-            mApple.draw(mCanvas, mPaint);
-            mSnake.draw(mCanvas, mPaint);
-
+            drawNames();
             // Draw some text while paused
             if(mPaused){
 
-                // Set the size and color of the mPaint for the text
-                mPaint.setColor(Color.argb(255, 255, 255, 255));
-                mPaint.setTextSize(250);
-
-                // Draw the message
-                // We will give this an international upgrade soon
-                //mCanvas.drawText("Tap To Play!", 200, 700, mPaint);
-                mCanvas.drawText(getResources().
-                                getString(R.string.tap_to_play),
-                        200, 700, mPaint);
+                //Refactored
+                drawPaused();
             }
-
 
             // Unlock the mCanvas and reveal the graphics for this frame
             mSurfaceHolder.unlockCanvasAndPost(mCanvas);
+
         }
+    }
+
+    //Refactored
+    public void drawColorSize() {
+
+        // Set the size and color of the mPaint for the text
+        mPaint.setColor(Color.argb(255, 255, 255, 255));
+        mPaint.setTextSize(120);
+
+        // Draw the score
+        mCanvas.drawText("" + mScore, 20, 120, mPaint);
+
+        // Draw the apple and the snake
+        mApple.draw(mCanvas, mPaint);
+        mSnake.draw(mCanvas, mPaint);
+    }
+
+    //Refactored
+    public void drawPaused() {
+        // Set the size and color of the mPaint for the text
+        mPaint.setColor(Color.argb(255, 203, 67, 53));
+        mPaint.setTextSize(250);
+
+        // Draw the message
+        mCanvas.drawText(getResources().
+                        getString(R.string.tap_to_play),
+                450, 600, mPaint);
+
+        drawNames();
+
+    }
+
+    //Draws names of the students who worked to make the code better
+    public void drawNames() {
+        mPaint.setColor(Color.argb(255, 255, 255, 255));
+        mPaint.setTextSize(30);
+
+        mCanvas.drawText(getResources().
+                        getString(R.string.name1),
+                1950, 50, mPaint);
+        mCanvas.drawText(getResources().
+                        getString(R.string.name2),
+                1950, 85, mPaint);
+
     }
 
     @Override
