@@ -1,3 +1,4 @@
+
 package com.gamecodeschool.c17snake;
 
 import android.app.UiModeManager;
@@ -365,7 +366,7 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
         }
         return true;
     }
-        // Stop the thread
+    // Stop the thread
     public void pause() {
         mPlaying = false;
         try {
