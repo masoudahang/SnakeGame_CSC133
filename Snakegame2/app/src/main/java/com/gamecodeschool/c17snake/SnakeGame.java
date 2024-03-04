@@ -246,13 +246,13 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
         if (!mPaused) {
             mScore = 0;
             mApple.spawn();
+            mApple.hide(); // Hide the apple upon resetting the game
             mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
+            mSnake.hide(); // Hide the snake upon resetting the game
             isFirstPause = true; // Set isFirstPause to true upon resetting the game
             mPaused = true; // Set mPaused to true upon resetting the game
         }
     }
-
-    // Do all the drawing
     public void draw() {
         // Get a lock on the canvas
         if (mSurfaceHolder.getSurface().isValid()) {
@@ -261,18 +261,25 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
             // Draw the background image
             mCanvas.drawBitmap(mBackgroundBitmap, 0, 0, null);
 
-            // Refactored
-            drawColorSize(); // This method includes drawing the score
+            // Draw the score
+            drawColorSize();
 
+            // Draw the names
             drawNames();
 
             if (isFirstPause && mPaused) {
-                // Draw the "Tap to play" message if the game is initially paused
+                // Draw the "Tap to play" prompt if the game is initially paused
                 drawPaused();
             } else {
                 // Draw the pause button only if the game is paused and not rendering "Tap to play"
                 drawPauseButton(mCanvas, mPaint);
+
+                if (!mPaused) {
+                    // Draw the apple only if the game is not paused
+                    mApple.draw(mCanvas, mPaint);
+                }
             }
+
             // Unlock the canvas and reveal the graphics for this frame
             mSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
