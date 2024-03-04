@@ -44,4 +44,10 @@ class Apple extends GameObject implements Drawable {
                 location.x * size, location.y * size, paint);
     }
 
+    // Method to hide the apple
+    public void hide() {
+        // Set the apple's location outside the visible screen
+        location.set(-1, -1); // Set the location outside the visible screen
+    }
+
 }
