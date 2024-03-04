@@ -122,6 +122,19 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
         segmentLocations.add(new Point(w / 2, h / 2));
     }
 
+    // Method to hide the snake
+    @Override
+    public void hide() {
+        // Set the snake's head position outside the visible screen
+        segmentLocations.get(0).set(-1, -1);
+
+        // Set each segment's position outside the visible screen
+        for (int i = 1; i < segmentLocations.size(); i++) {
+            segmentLocations.get(i).x = -1;
+            segmentLocations.get(i).y = -1;
+        }
+    }
+
 
     public void move() {
         //Refactored
@@ -208,6 +221,7 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
         return false;
     }
 
+    @Override
     public void draw(Canvas canvas, Paint paint) {
 
         // Don't run this code if ArrayList has nothing in it
@@ -304,5 +318,7 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
             }
         }
     }
+
+    @Override
     public void spawn() {}
 }

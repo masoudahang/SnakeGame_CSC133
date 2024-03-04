@@ -26,7 +26,6 @@ public abstract class GameObject {
         mSpawnRange = location;
         mMoveRange = location;
         segmentLocations = new ArrayList<>();
-
     }
 
     // Let SnakeGame know where the apple is
@@ -37,5 +36,7 @@ public abstract class GameObject {
     public abstract void spawn();
 
     public abstract void draw(Canvas canvas, Paint paint);
+
+    public abstract void hide();
 
 }

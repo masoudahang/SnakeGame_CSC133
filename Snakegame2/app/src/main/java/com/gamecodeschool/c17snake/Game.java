@@ -17,7 +17,7 @@ public interface Game {
 
     void drawColorSize();
 
-    void drawPaused();
+    //void drawPaused();
 
     void pause();
 

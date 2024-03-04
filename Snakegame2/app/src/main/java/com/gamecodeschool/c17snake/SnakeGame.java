@@ -7,26 +7,34 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.SoundPool;
-import android.os.Build;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.io.IOException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.view.WindowManager;
 
 class SnakeGame extends SurfaceView implements Runnable, Game {
 
     // Objects for the game loop/thread
     private Thread mThread = null;
+
     // Control pausing between updates
     private long mNextFrameTime;
+    private boolean isFirstPause = true;
+    // private final boolean mShowResumeButton = false;
+
     // Is the game currently playing and or paused?
     private volatile boolean mPlaying = false;
     private volatile boolean mPaused = true;
+
+    //Java utility checks System if it is paused
 
     // for playing sound effects
     private SoundPool mSP;
@@ -40,62 +48,88 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
     // How many points does the player have
     private int mScore;
 
+    //Pause button rendering objects
+    private Rect mPauseButtonRect;
+    private Paint mPauseButtonPaint;
+
     // Objects for drawing
     private Canvas mCanvas;
-    private SurfaceHolder mSurfaceHolder;
-    private Paint mPaint;
+    private final SurfaceHolder mSurfaceHolder;
+    private final Paint mPaint;
 
     // A snake ssss
     private Snake mSnake;
     // And an apple
     private Apple mApple;
-
     private Bitmap mBackgroundBitmap;
 
 
     // This is the constructor method that gets called
-    // from SnakeActivity
+// from SnakeActivity
     public SnakeGame(Context context, Point size) {
         super(context);
 
-        //Load the background image
+
+        int buttonWidth = size.x / 6;
+        int buttonHeight = size.y / 12;
+        int buttonLeft = (size.x - buttonWidth) / 2;
+        int buttonTop = size.y / 10; // Adjust the value as needed
+
+        mPauseButtonRect = new Rect(buttonLeft, buttonTop, buttonLeft + buttonWidth, buttonTop + buttonHeight);
+        mPauseButtonPaint = new Paint();
+        mPauseButtonPaint.setColor(Color.RED); // Adjust color as needed
+
+        // Load the background image
         mBackgroundBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
 
-        //scale the image to match the screen size
+        // Scale the image to match the screen size
         mBackgroundBitmap = Bitmap.createScaledBitmap(mBackgroundBitmap, size.x, size.y, true);
 
-        //Refactored
+        // Refactored
         soundPool();
 
-        //Refactored
+        // Refactored
         TryCatch(context);
-
 
         // Initialize the drawing objects
         mSurfaceHolder = getHolder();
         mPaint = new Paint();
 
-        //Refactored
+        // Refactored
         callConstructors(context, size);
 
+        // Create the pause button
+        createPauseButton();
+    }
+
+    // Method to create and draw the pause button
+    public void createPauseButton() {
+
+        int buttonWidth = 400;
+        int buttonHeight = 100;
+        int buttonLeft = 800;
+        int buttonTop = 50;
+
+        // Create a Rect object representing the pause button's bounds
+        mPauseButtonRect = new Rect(buttonLeft, buttonTop, buttonLeft + buttonWidth, buttonTop + buttonHeight);
+
+        // Define the appearance of the pause button (e.g., color)
+        mPauseButtonPaint = new Paint();
+        mPauseButtonPaint.setColor(Color.RED); // Adjust color as needed
     }
 
     //Refactored
     void soundPool() {
         // Initialize the SoundPool
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build();
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
 
-            mSP = new SoundPool.Builder()
-                    .setMaxStreams(5)
-                    .setAudioAttributes(audioAttributes)
-                    .build();
-        } else {
-            mSP = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-        }
+        mSP = new SoundPool.Builder()
+                .setMaxStreams(5)
+                .setAudioAttributes(audioAttributes)
+                .build();
     }
 
     //Refactored
@@ -120,7 +154,6 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
     void callConstructors(Context context, Point size) {
         // Work out how many pixels each block is
         int blockSize = size.x / NUM_BLOCKS_WIDE;
-        // How many blocks of the same size will fit into the height
         mNumBlocksHigh = size.y / blockSize;
 
         // Call the constructors of our two game objects
@@ -134,23 +167,6 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
                         mNumBlocksHigh),
                 blockSize);
 
-    }
-
-
-    // Called to start a new game
-    public void newGame() {
-
-        // reset the snake
-        mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
-
-        // Get the apple ready for dinner
-        mApple.spawn();
-
-        // Reset the mScore
-        mScore = 0;
-
-        // Setup mNextFrameTime so an update can triggered
-        mNextFrameTime = System.currentTimeMillis();
     }
 
 
@@ -169,7 +185,6 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
         }
     }
 
-
     // Check to see if it is time for an update
     public boolean updateRequired() {
 
@@ -180,7 +195,6 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
 
         // Are we due to update the frame
         if(mNextFrameTime <= System.currentTimeMillis()){
-            // Tenth of a second has passed
 
             // Setup when the next update will be triggered
             mNextFrameTime =System.currentTimeMillis()
@@ -194,60 +208,76 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
         return false;
     }
 
+    public void newGame() {
 
-    // Update all the game objects
-    public void update() {
-
-        // Move the snake
-        mSnake.move();
-
-        // Did the head of the snake eat the apple?
-        if(mSnake.checkDinner(mApple.getLocation())){
-            // This reminds me of Edge of Tomorrow.
-            // One day the apple will be ready!
+        // Reset the snake and spawn the apple if it's not paused and it's the first pause
+        if (!mPaused && isFirstPause) {
+            mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
             mApple.spawn();
-
-            // Add to  mScore
-            mScore = mScore + 1;
-
-            // Play a sound
-            mSP.play(mEat_ID, 1, 1, 0, 0, 1);
         }
-
-        // Did the snake die?
-        if (mSnake.detectDeath()) {
-            // Pause the game ready to start again
-            mSP.play(mCrashID, 1, 1, 0, 0, 1);
-
-            mPaused =true;
-        }
-
+        isFirstPause = mPaused;
+        mNextFrameTime = System.currentTimeMillis();
     }
 
+    // Update the newGame() method to set isFirstPause to true
+    public void update() {
+        if (!mPaused) {
+            mSnake.move();
 
-    // Do all the drawing
+            if (mSnake.checkDinner(mApple.getLocation())) {
+                mApple.spawn();
+                mScore++;
+                mSP.play(mEat_ID, 1, 1, 0, 0, 1);
+            }
+
+            if (mSnake.detectDeath()) {
+                // Reset the score and the game if snake dies
+                resetGame();
+            }
+        }
+    }
+
+    private void resetGame() {
+        if (!mPaused) {
+            mScore = 0;
+            mApple.spawn();
+            mApple.hide(); // Hide the apple upon resetting the game
+            mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
+            mSnake.hide(); // Hide the snake upon resetting the game
+            isFirstPause = true; // Set isFirstPause to true upon resetting the game
+            mPaused = true; // Set mPaused to true upon resetting the game
+        }
+    }
+
     public void draw() {
-        // Get a lock on the mCanvas
+        // Get a lock on the canvas
         if (mSurfaceHolder.getSurface().isValid()) {
             mCanvas = mSurfaceHolder.lockCanvas();
 
-            //Draw the background image
+            // Draw the background image
             mCanvas.drawBitmap(mBackgroundBitmap, 0, 0, null);
 
-            //Refactored
+            // Draw the score
             drawColorSize();
 
+            // Draw the names
             drawNames();
-            // Draw some text while paused
-            if(mPaused){
 
-                //Refactored
+            if (isFirstPause && mPaused) {
+                // Draw the "Tap to play" prompt if the game is initially paused
                 drawPaused();
+            } else {
+                // Draw the pause button only if the game is paused and not rendering "Tap to play"
+                drawPauseButton(mCanvas, mPaint);
+
+                if (!mPaused) {
+                    // Draw the apple only if the game is not paused
+                    mApple.draw(mCanvas, mPaint);
+                }
             }
 
-            // Unlock the mCanvas and reveal the graphics for this frame
+            // Unlock the canvas and reveal the graphics for this frame
             mSurfaceHolder.unlockCanvasAndPost(mCanvas);
-
         }
     }
 
@@ -272,13 +302,12 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
         mPaint.setColor(Color.argb(255, 203, 67, 53));
         mPaint.setTextSize(250);
 
-        // Draw the message
-        mCanvas.drawText(getResources().
-                        getString(R.string.tap_to_play),
-                450, 600, mPaint);
+        if (isFirstPause && mPaused) {
+            // Draw the "Tap to play" message if the game is initially paused
+            mCanvas.drawText(getResources().getString(R.string.tap_to_play), 450, 600, mPaint);
+        }
 
         drawNames();
-
     }
 
     //Draws names of the students who worked to make the code better
@@ -295,29 +324,74 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
 
     }
 
+    // Method to get screen dimensions
+    private Point getScreenDimensions() {
+        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        int screenWidth = metrics.widthPixels;
+        int screenHeight = metrics.heightPixels;
+        return new Point(screenWidth, screenHeight);
+    }
+
+    // Method to draw the pause button
+    private void drawPauseButton(Canvas canvas, Paint paint) {
+        // Set color for the button background
+        paint.setColor(Color.argb(255, 203, 67, 53));
+
+        // Get screen dimensions
+        Point screenDimensions = getScreenDimensions();
+        int screenWidth = screenDimensions.x;
+        int screenHeight = screenDimensions.y;
+
+        // Define the size and position of the button relative to screen dimensions
+        int buttonWidth = screenWidth / 9;
+        int buttonHeight = screenHeight / 20;
+        int buttonLeft = (screenWidth - buttonWidth) / 2;
+        int buttonTop = screenHeight / 10;
+
+        // Draw a rounded rectangle representing the button
+        canvas.drawRoundRect(
+                buttonLeft, buttonTop,
+                buttonLeft + buttonWidth, buttonTop + buttonHeight,
+                25, 25, paint
+        );
+
+        // Set color and size for the button text
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(buttonHeight * 0.9f);
+
+        // Determine the text to be displayed based on the pause state
+        String buttonText = mPaused ? "Resume" : "Pause";
+
+        // Calculate the position to center the text within the button
+        float textWidth = paint.measureText(buttonText);
+        float textX = buttonLeft + (buttonWidth - textWidth) / 2;
+        float textY = buttonTop + (float) buttonHeight / 2 + paint.getTextSize() / 3; // Adjust for vertical centering
+
+        // Draw the determined text at the center of the button
+        canvas.drawText(buttonText, textX, textY, paint);
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
-        switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_UP:
-                if (mPaused) {
-                    mPaused = false;
-                    newGame();
-
-                    // Don't want to process snake direction for this tap
-                    return true;
-                }
-
-                // Let the Snake class handle the input
+        if ((motionEvent.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
+            if (mPaused) {
+                // If the game is paused, resume the game
+                mPaused = false;
+                newGame();
+            } else if (mPauseButtonRect.contains((int) motionEvent.getX(), (int) motionEvent.getY())) {
+                // If the pause button is touched, pause the game
+                mPaused = true;
+            } else {
+                // If the game is running and not paused, handle snake movement
                 mSnake.switchHeading(motionEvent);
-                break;
-
-            default:
-                break;
-
+            }
+            return true;
         }
         return true;
     }
-
 
     // Stop the thread
     public void pause() {
@@ -328,7 +402,6 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
             // Error
         }
     }
-
 
     // Start the thread
     public void resume() {
