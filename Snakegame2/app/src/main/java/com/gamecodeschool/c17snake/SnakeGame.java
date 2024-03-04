@@ -192,7 +192,6 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
 
         // Are we due to update the frame
         if(mNextFrameTime <= System.currentTimeMillis()){
-            // Tenth of a second has passed
 
             // Setup when the next update will be triggered
             mNextFrameTime =System.currentTimeMillis()
@@ -207,10 +206,6 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
     }
 
     public void newGame() {
-        // Reset the score if it's not the first pause and the game is not being paused
-        if (!isFirstPause && !mPaused) {
-            mScore = 0;
-        }
 
         // Reset the snake and spawn the apple if it's not paused and it's the first pause
         if (!mPaused && isFirstPause) {
@@ -223,8 +218,6 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
     }
 
     // Update the newGame() method to set isFirstPause to true
-    // Update the newGame() method to set isFirstPause to true
-
     public void update() {
         if (!mPaused) {
             mSnake.move();
@@ -311,11 +304,9 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
             mCanvas.drawText(getResources().getString(R.string.tap_to_play), 450, 600, mPaint);
         }
 
-
         drawNames();
     }
-
-
+    
     //Draws names of the students who worked to make the code better
     public void drawNames() {
         mPaint.setColor(Color.argb(255, 255, 255, 255));
@@ -374,7 +365,7 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
         // Calculate the position to center the text within the button
         float textWidth = paint.measureText(buttonText);
         float textX = buttonLeft + (buttonWidth - textWidth) / 2;
-        float textY = buttonTop + buttonHeight / 2 + paint.getTextSize() / 3; // Adjust for vertical centering
+        float textY = buttonTop + (float) buttonHeight / 2 + paint.getTextSize() / 3; // Adjust for vertical centering
 
         // Draw the determined text at the center of the button
         canvas.drawText(buttonText, textX, textY, paint);
@@ -398,6 +389,7 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
         }
         return true;
     }
+
     // Stop the thread
     public void pause() {
         mPlaying = false;
@@ -407,6 +399,7 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
             // Error
         }
     }
+
     // Start the thread
     public void resume() {
         mPlaying = true;
