@@ -243,36 +243,38 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
     }
 
     private void resetGame() {
-
-        mScore = 0;
-
-        newGame();
+        if (!mPaused) {
+            mScore = 0;
+            mApple.spawn();
+            mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
+            isFirstPause = true; // Set isFirstPause to true upon resetting the game
+            mPaused = true; // Set mPaused to true upon resetting the game
+        }
     }
 
-        // Do all the drawing
+    // Do all the drawing
     public void draw() {
-        // Get a lock on the mCanvas
+        // Get a lock on the canvas
         if (mSurfaceHolder.getSurface().isValid()) {
             mCanvas = mSurfaceHolder.lockCanvas();
 
-            //Draw the background image
+            // Draw the background image
             mCanvas.drawBitmap(mBackgroundBitmap, 0, 0, null);
 
-            //Refactored
-            drawColorSize();
+            // Refactored
+            drawColorSize(); // This method includes drawing the score
 
             drawNames();
 
-            drawPauseButton(mCanvas, mPaint);
-
-            if(mPaused){
-                //Refactored
+            if (isFirstPause && mPaused) {
+                // Draw the "Tap to play" message if the game is initially paused
                 drawPaused();
+            } else {
+                // Draw the pause button only if the game is paused and not rendering "Tap to play"
+                drawPauseButton(mCanvas, mPaint);
             }
-
-            // Unlock the mCanvas and reveal the graphics for this frame
+            // Unlock the canvas and reveal the graphics for this frame
             mSurfaceHolder.unlockCanvasAndPost(mCanvas);
-
         }
     }
 
