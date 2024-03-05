@@ -32,15 +32,15 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
     // A bitmap for the body
     private Bitmap mBitmapBody;
 
-    public Snake(Context context, Point mr, int ss) {
+    protected Snake(Context context, Point mr, int ss) {
 
         super(context, mr, ss);
 
-        //Refactored
+        // Refactored
         headMovement(context, ss);
 
-        //Refactored
-        headRotation(context, ss);
+        // Refactored, Overload
+        headMovement(ss);
 
         // Create and scale the body
         mBitmapBody = BitmapFactory
@@ -70,8 +70,8 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
     }
 
 
-    //Refactored
-    void headMovement(Context context, int ss) {
+    // Refactored
+    protected void headMovement(Context context, int ss) {
         // Create and scale the bitmaps
         mBitmapHeadRight = BitmapFactory
                 .decodeResource(context.getResources(),
@@ -92,8 +92,9 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
 
     }
 
-    //Refactored
-    void headRotation(Context context, int ss) {
+    // Refactored
+    // Overload
+    protected void headMovement(int ss) {
         // Modify the bitmaps to face the snake head
         // in the correct direction
         mBitmapHeadRight = Bitmap
@@ -120,11 +121,10 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
         mBitmapHeadDown = Bitmap
                 .createBitmap(mBitmapHeadRight,
                         0, 0, ss, ss, matrix, true);
-
     }
 
     // Get the snake ready for a new game
-    void reset(int w, int h) {
+    protected void reset(int w, int h) {
 
         // Reset the heading
         heading = Heading.RIGHT;
@@ -166,8 +166,8 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
 
     }
 
-    //Refactored
-    void movingLoop() {
+    // Refactored
+    public void movingLoop() {
         // Move the body
         // Start at the back and move it
         // to the position of the segment in front of it
@@ -180,6 +180,7 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
         }
     }
 
+    @Override
     public boolean detectDeath() {
         // Has the snake died?
         boolean dead = false;
@@ -205,7 +206,8 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
         return dead;
     }
 
-    boolean checkDinner(Point l) {
+    @Override
+    public boolean checkDinner(Point l) {
         //if (snakeXs[0] == l.x && snakeYs[0] == l.y) {
         if (segmentLocations.get(0).x == l.x &&
                 segmentLocations.get(0).y == l.y) {
@@ -221,6 +223,7 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
         return false;
     }
 
+    @Override
     public void draw(Canvas canvas, Paint paint) {
 
         // Don't run this code if ArrayList has nothing in it
@@ -228,32 +231,28 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
             // All the code from this method goes here
             // Draw the head
             switch (heading) {
-                case RIGHT:
-                    canvas.drawBitmap(mBitmapHeadRight,
+                case RIGHT: canvas.drawBitmap(mBitmapHeadRight,
                             segmentLocations.get(0).x
                                     * mSegmentSize,
                             segmentLocations.get(0).y
                                     * mSegmentSize, paint);
                     break;
 
-                case LEFT:
-                    canvas.drawBitmap(mBitmapHeadLeft,
+                case LEFT: canvas.drawBitmap(mBitmapHeadLeft,
                             segmentLocations.get(0).x
                                     * mSegmentSize,
                             segmentLocations.get(0).y
                                     * mSegmentSize, paint);
                     break;
 
-                case UP:
-                    canvas.drawBitmap(mBitmapHeadUp,
+                case UP: canvas.drawBitmap(mBitmapHeadUp,
                             segmentLocations.get(0).x
                                     * mSegmentSize,
                             segmentLocations.get(0).y
                                     * mSegmentSize, paint);
                     break;
 
-                case DOWN:
-                    canvas.drawBitmap(mBitmapHeadDown,
+                case DOWN: canvas.drawBitmap(mBitmapHeadDown,
                             segmentLocations.get(0).x
                                     * mSegmentSize,
                             segmentLocations.get(0).y
@@ -261,13 +260,13 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
                     break;
             }
 
-            //Refactored
+            // Refactored
             DrawSnakeBody(canvas, paint);
         }
     }
 
     //Refactored
-    void DrawSnakeBody(Canvas canvas, Paint paint) {
+    protected void DrawSnakeBody(Canvas canvas, Paint paint) {
         // Draw the snake body one block at a time
         for (int i = 1; i < segmentLocations.size(); i++) {
             canvas.drawBitmap(mBitmapBody,
@@ -280,7 +279,7 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
 
 
     // Handle changing direction
-    void switchHeading(MotionEvent motionEvent) {
+    protected void switchHeading(MotionEvent motionEvent) {
 
         // Is the tap on the right hand side?
         if (motionEvent.getX() >= halfWayPoint) {
@@ -317,5 +316,6 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
             }
         }
     }
+
     public void spawn() {}
 }
