@@ -33,7 +33,6 @@ public abstract class GameObject {
         return location;
     }
 
-    public abstract void spawn();
 
     public abstract void draw(Canvas canvas, Paint paint);
 
