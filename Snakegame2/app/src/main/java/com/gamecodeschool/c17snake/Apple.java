@@ -8,7 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import java.util.Random;
 
-class Apple extends GameObject implements Drawable {
+class Apple extends GameObject implements Spawnable{
 
     // An image to represent the apple
     private Bitmap mBitmapApple;

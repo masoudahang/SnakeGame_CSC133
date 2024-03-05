@@ -9,7 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.view.MotionEvent;
 
-class Snake extends GameObject implements Movable, Drawable, Collidable {
+class Snake extends GameObject implements Movable, Collidable {
 
     // Where is the centre of the screen
     // horizontally in pixels?
@@ -71,7 +71,8 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
 
 
     // Refactored
-    protected void headMovement(Context context, int ss) {
+    @Override
+    public void headMovement(Context context, int ss) {
         // Create and scale the bitmaps
         mBitmapHeadRight = BitmapFactory
                 .decodeResource(context.getResources(),
@@ -167,6 +168,7 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
     }
 
     // Refactored
+    @Override
     public void movingLoop() {
         // Move the body
         // Start at the back and move it
@@ -279,7 +281,8 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
 
 
     // Handle changing direction
-    protected void switchHeading(MotionEvent motionEvent) {
+    @Override
+    public void switchHeading(MotionEvent motionEvent) {
 
         // Is the tap on the right hand side?
         if (motionEvent.getX() >= halfWayPoint) {
@@ -317,5 +320,4 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
         }
     }
 
-    public void spawn() {}
 }
