@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 
 public abstract class GameObject {
-
     protected Point location;
     protected int mSegmentSize;
     protected int size;
@@ -33,6 +32,7 @@ public abstract class GameObject {
     public Point getLocation() {
         return location;
     }
+
     public abstract void spawn();
 
     public abstract void draw(Canvas canvas, Paint paint);

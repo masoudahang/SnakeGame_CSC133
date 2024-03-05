@@ -14,7 +14,7 @@ class Apple extends GameObject implements Drawable {
     private Bitmap mBitmapApple;
 
     /// Set up the apple in the constructor
-    Apple(Context context, Point sr, int s){
+    Apple(Context context, Point sr, int s) {
 
         super(context, sr, s);
 
@@ -27,7 +27,7 @@ class Apple extends GameObject implements Drawable {
 
     // This is called every time an apple is eaten
     @Override
-    public void spawn(){
+    public void spawn() {
         // Choose two random values and place the apple
         Random random = new Random();
         location.x = random.nextInt(mSpawnRange.x) + 1;
@@ -37,7 +37,7 @@ class Apple extends GameObject implements Drawable {
 
     // Draw the apple
     @Override
-    public void draw(Canvas canvas, Paint paint){
+    public void draw(Canvas canvas, Paint paint) {
         //canvas.drawBitmap(mBitmapApple,
         //        location.x * mSize, location.y * mSize, paint);
         canvas.drawBitmap(mBitmapApple,
@@ -45,6 +45,7 @@ class Apple extends GameObject implements Drawable {
     }
 
     // Method to hide the apple
+    @Override
     public void hide() {
         // Set the apple's location outside the visible screen
         location.set(-1, -1); // Set the location outside the visible screen

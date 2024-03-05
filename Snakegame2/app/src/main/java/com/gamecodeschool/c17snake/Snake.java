@@ -57,6 +57,7 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
     }
 
     // Method to hide the snake
+    @Override
     public void hide() {
         // Set the snake's head position outside the visible screen
         segmentLocations.get(0).set(-1, -1);
@@ -178,7 +179,6 @@ class Snake extends GameObject implements Movable, Drawable, Collidable {
             segmentLocations.get(i).y = segmentLocations.get(i - 1).y;
         }
     }
-
 
     public boolean detectDeath() {
         // Has the snake died?
