@@ -409,6 +409,8 @@ class SnakeGame extends SurfaceView implements Runnable, Game {
         return new Point(screenWidth, screenHeight);
     }
 
+    // Didn't Refactor since it makes the code of this class even longer because we have
+    // to initialize variables outside of the method in order to be able to refactor
     // Original: Method to draw the pause button
     private void drawPauseButton(Canvas canvas, Paint paint) {
         // Set color for the button background
