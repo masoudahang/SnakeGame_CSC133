@@ -137,7 +137,7 @@ class Snake extends GameObject implements Movable, Collidable {
         segmentLocations.add(new Point(w / 2, h / 2));
     }
 
-
+    @Override
     public void move() {
         //Refactored
         movingLoop();
